@@ -10,9 +10,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -21,24 +25,45 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 public class GerenciadorArquivoExcel {
 
 	public int IMAGEM;
-	public final int TITULO = 4;
-	public final int AUTOR = 3;
-	public final int EDITORA = 5;
-	public final int ISBN = 2;
+	public int TITULO;
+	public int ISBN;
 	
 	public POIFSFileSystem fis;
 	private Sheet sheet;
 	private Workbook workbook;
 
 	
-	public GerenciadorArquivoExcel(String path) throws FileNotFoundException, IOException, InvalidFormatException {
+	public GerenciadorArquivoExcel(String path) throws FileNotFoundException, IOException, InvalidFormatException, Exception {
 		
 		workbook = WorkbookFactory.create(new BufferedInputStream(new FileInputStream(path)));
 		sheet = workbook.getSheetAt(0);
+
+		TITULO = procuraColuna("titulo", "título");
+		ISBN = procuraColuna("isbn", "asin");
+		
+		if(ISBN < 0)
+			throw new Exception("coluna ISBN não encontrada.");
 		
 		IMAGEM = primeiraColunaVazia();
+		
+		System.out.println("título " + TITULO);
+		System.out.println("isbn " + ISBN);
 	}
 	
+	private int procuraColuna(String... buscas) throws Exception {
+		Iterator<Cell> cellIterator = sheet.getRow(0).cellIterator();
+		while(cellIterator.hasNext()) {
+			Cell cell = cellIterator.next();
+			String value = cell.getStringCellValue();
+			for(String busca : buscas) {
+				if(StringUtils.containsIgnoreCase(value, busca))
+					return cell.getColumnIndex();
+			}
+		}
+		return -1;
+	}
+
+
 	private int primeiraColunaVazia() {
 		return sheet.getRow(0).getLastCellNum();
 	}
@@ -48,11 +73,10 @@ public class GerenciadorArquivoExcel {
 	}
 	
 	public String retornaDadoLinhaColuna(int linha, int coluna) {
-		if(sheet.getRow(linha) != null
-				&& sheet.getRow(linha).getCell(coluna) != null
-				&& sheet.getRow(linha).getCell(coluna).getStringCellValue() != null) {
-			
-			return sheet.getRow(linha).getCell(coluna).getStringCellValue();
+		if(sheet.getRow(linha) != null && sheet.getRow(linha).getCell(coluna) != null) {
+			sheet.getRow(linha).getCell(coluna).setCellType(CellType.STRING);
+			if(sheet.getRow(linha).getCell(coluna).getStringCellValue() != null)
+				return sheet.getRow(linha).getCell(coluna).getStringCellValue();
 		}
 		return "";
 	}
@@ -64,16 +88,16 @@ public class GerenciadorArquivoExcel {
 	public ArrayList<Livro> retornaListaPesquisa(int linha) {
 		ArrayList<Livro> lista = new ArrayList<Livro>();
 		for(int i = 1; i < linha; i++) {
-		
-			String titulo = retornaDadoLinhaColuna(i, TITULO);
-			String autor = retornaDadoLinhaColuna(i, AUTOR);
+			String titulo = "";
+			
+			if(TITULO != -1)
+				titulo = retornaDadoLinhaColuna(i, TITULO);
+			
 			String isbn = retornaDadoLinhaColuna(i, ISBN);
-			String editora = retornaDadoLinhaColuna(i, EDITORA);
 			String imagem = "";
-			String oclc = "";
 			
 			
-			Livro livro = new Livro(titulo, autor, isbn, oclc, imagem, editora);
+			Livro livro = new Livro(titulo, isbn, imagem);
 			livro.formatarCampos();
 			
 			lista.add(livro);
@@ -115,7 +139,7 @@ public class GerenciadorArquivoExcel {
 		gravaDadoLinhaColuna(linha, IMAGEM, imagem);
 	}
 	
-	public void registrarCabecalho(String titulo) throws IOException {
+	public void registrarCabecalhoImagem(String titulo) throws IOException {
 		gravaDadoLinhaColuna(0, IMAGEM, titulo);
 	}
 	

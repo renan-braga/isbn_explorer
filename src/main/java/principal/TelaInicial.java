@@ -3,6 +3,8 @@ package principal;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.CompoundBorder;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import org.apache.tools.ant.Main;
 
@@ -80,34 +84,21 @@ public class TelaInicial extends JPanel implements ActionListener {
 		txtDestino = new JTextField();
 		txtDestino.setBounds(32, 276, 286, 20);
 		txtDestino.setColumns(10);
-
+			
 		btnPesquisaDestino = new JButton("Pesquisar...");
 		btnPesquisaDestino.setBounds(328, 273, 91, 27);
 		btnPesquisaDestino.addActionListener(this);
-
+		
 		lblDestino = new Label("Escolha onde salvar");
 		lblDestino.setBounds(32, 248, 112, 22);
 
-		//		lblPesquisasRealizadas = new JLabel("Pesquisas realizadas:");
-		//		lblPesquisasRealizadas.setHorizontalAlignment(SwingConstants.LEFT);
-		//		lblPesquisasRealizadas.setBounds(138, 380, 112, 14);
-		//		
-		//		lblCapasEncontradas = new JLabel("Capas encontradas:");
-		//		lblCapasEncontradas.setHorizontalAlignment(SwingConstants.LEFT);
-		//		lblCapasEncontradas.setBounds(138, 355, 112, 14);
-		//		
-		//		lblRegistrosVlidos = new JLabel("Registros v\u00E1lidos:");
-		//		lblRegistrosVlidos.setHorizontalAlignment(SwingConstants.LEFT);
-		//		lblRegistrosVlidos.setBounds(138, 331, 112, 14);
-		//		
 		btnIniciarExtracao = new JButton("Iniciar Extra\u00E7\u00E3o");
 		btnIniciarExtracao.setBounds(105, 338, 185, 45);
 
-		lblStatus = new JLabel("Status da extração:");
+		lblStatus = new JLabel("Status da extração: pronto para iniciar");
 		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
 		lblStatus.setBounds(105, 406, 230, 55);
-
-
+		
 		URL urlIcon = Main.class.getResource("/extractor-icon.png");
 		btnIniciarExtracao.setIcon(new ImageIcon(urlIcon));
 		btnIniciarExtracao.setIconTextGap(10);
@@ -129,20 +120,24 @@ public class TelaInicial extends JPanel implements ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>(){
-						protected Void doInBackground() throws Exception {
-							ExtratorLivrosAmazon.extrairDadosAmazon(txtOrigem.getText(), txtDestino.getText(), lblStatus);
-
-							return null;
-
+				if(txtOrigem.getText().equals(""))
+					JOptionPane.showMessageDialog(null, "Preencha uma planilha de origem");
+				else if(txtDestino.getText().equals(""))
+					JOptionPane.showMessageDialog(null, "Preencha uma planilha de destino");
+				else {
+					try {
+						SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>(){
+							protected Void doInBackground() throws Exception {
+								ExtratorLivrosAmazon.extrairDadosAmazon(txtOrigem.getText(), txtDestino.getText(), lblStatus);
+								return null;
+							};
 						};
-					};
-					worker.execute();
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(null, "Entre em contato com o desenvolvedor, um erro ocorreu: \n" + e1.getMessage());
-					e1.printStackTrace();
-				}				
+						worker.execute();
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, "Entre em contato com o desenvolvedor, um erro ocorreu: \n" + e1.getMessage());
+						e1.printStackTrace();
+					}		
+				}
 			}
 		});
 

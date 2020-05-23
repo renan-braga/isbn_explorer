@@ -2,12 +2,12 @@ package isbn_explorer;
 
 public class Livro {
 	
-	public String titulo;
-	public String autor;
-	public String isbn;
-	public String oclc;
-	public String imagem;
-	public String editora;
+	public String titulo = "";
+	public String autor = "";
+	public String isbn = "";
+	public String oclc = "";
+	public String imagem = "";
+	public String editora = "";
 
 	public Livro(String titulo, String autor, String isbn, String oclc, String imagem, String editora) {
 		this.titulo = titulo;
@@ -16,6 +16,17 @@ public class Livro {
 		this.oclc = oclc;
 		this.imagem = imagem;
 		this.editora = editora;
+	}
+
+	public Livro(String titulo, String isbn, String imagem) {
+		this.titulo = titulo;
+		this.isbn = isbn;
+		this.imagem = imagem;
+	}
+
+	public Livro(String isbn, String imagem) {
+		this.isbn = isbn;
+		this.imagem = imagem;
 	}
 
 	public String getTitulo() {

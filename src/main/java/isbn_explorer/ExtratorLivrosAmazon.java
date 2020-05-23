@@ -22,8 +22,8 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 	
 	public static void extrairDadosAmazon(String pathPlanilha, String novaPlanilha, JLabel lblStatus) throws Exception {
 		
-
 		//extrair dados amazon vazios
+		lblStatus.setText("Iniciando extração...");
 		GerenciadorArquivoExcel excel = new GerenciadorArquivoExcel(pathPlanilha);
 		ArrayList<Livro> lista = excel.retornaListaPesquisa(excel.retornaNumeroTotalLinhas());
 		
@@ -34,18 +34,8 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 		DriverExtrator extrator = new DriverExtrator(false);
 		
 		ArrayList<String> isbnUsados = new ArrayList<String>();
-
-		frame = new JFrame();
-		NotificacaoProcesso notificacao = new NotificacaoProcesso();
-		frame.setLayout(new BorderLayout());
-		frame.add(notificacao, BorderLayout.NORTH);
-		frame.setPreferredSize(new Dimension(300, 250));
-		frame.pack();
-		frame.setLocationByPlatform(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.setVisible(true);
 		
-		excel.registrarCabecalho("Capas");
+		excel.registrarCabecalhoImagem("Capas");
 		
 		String titulo = "";
 		String isbn = "";
@@ -56,7 +46,6 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 			isbn = livro.getIsbn();
 			imagem = "";
 
-			
 				if(!isbn.equals("") && !isbn.startsWith("000000000") && ehIsbnUnico(isbn, isbnUsados)) {
 					try {
 						isbnUsados.add(isbn);
@@ -68,12 +57,12 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 							imagem = listaResultados.findElement(By.xpath("//*[@data-image-index='0']")).getAttribute("src");
 							if( imagem!= "") {
 								acertos++; 
-								lblStatus.setText("<html> Encontradas: "+acertos+" capas <br> Titulo: " +titulo+" </html>");
+								lblStatus.setText("<html>Processando extração...<br> Encontradas: "+acertos+" capas <br> Titulo: " +titulo+"<br>ISBN: "+isbn+" </html>");
 							}
 						}
 					}
 					catch(Exception e) {
-						lblStatus.setText("Erro na extração no título " + titulo);
+						lblStatus.setText("Erro na extração no título " + titulo + " isbn " + isbn);
 						log.append(System.lineSeparator() + "##### NOVO ERRO #####" + System.lineSeparator());
 						log.append(titulo + System.lineSeparator());
 						e.printStackTrace(log);
@@ -88,8 +77,7 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 		}
 		long fim = System.currentTimeMillis();
 		long total = (fim - inicio) / 1000 / 60;
-		lblStatus.setText("<html>Finalizado com sucesso! Capas encontradas: "+acertos+" <br>Tempo decorrido: "+total+" minutos</html>");
-		System.out.println("\nTempo Total: " + total + " minutos");
+		lblStatus.setText("<html>Finalizado com sucesso! <br>Capas encontradas: "+acertos+" <br>Tempo decorrido: "+total+" minutos</html>");
 	}
 
 	private static boolean ehIsbnUnico(String isbn, ArrayList<String> isbnUsados) {
