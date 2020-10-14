@@ -33,7 +33,7 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 		
 		DriverExtrator extrator = new DriverExtrator(false);
 		
-		ArrayList<String> isbnUsados = new ArrayList<String>();
+//		ArrayList<String> isbnUsados = new ArrayList<String>();
 		
 		excel.registrarCabecalhoImagem("Capas");
 		
@@ -46,9 +46,10 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 			isbn = livro.getIsbn();
 			imagem = "";
 
-				if(!isbn.equals("") && !isbn.startsWith("000000000") && ehIsbnUnico(isbn, isbnUsados)) {
+//				if(!isbn.equals("") && !isbn.startsWith("000000000") && ehIsbnUnico(isbn, isbnUsados)) {
+				if(!isbn.equals("") && !isbn.startsWith("000000000")) {
 					try {
-						isbnUsados.add(isbn);
+//						isbnUsados.add(isbn);
 						extrator.getDriver().get(AMAZON_SEARCH + isbn);
 						extrator.waitForLoad();
 						WebElement listaResultados = extrator.getDriver().findElements(By.xpath("//*[@class='s-result-list s-search-results sg-row']")).get(0);
