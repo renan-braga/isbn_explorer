@@ -59,6 +59,7 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 							if( imagem!= "") {
 								acertos++; 
 								lblStatus.setText("<html>Processando extração...<br> Encontradas: "+acertos+" capas <br> Titulo: " +titulo+"<br>ISBN: "+isbn+" </html>");
+								imagem = retornaImagemResolucao350(imagem);
 							}
 						}
 					}
@@ -79,6 +80,16 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 		long fim = System.currentTimeMillis();
 		long total = (fim - inicio) / 1000 / 60;
 		lblStatus.setText("<html>Finalizado com sucesso! <br>Capas encontradas: "+acertos+" <br>Tempo decorrido: "+total+" minutos</html>");
+	}
+
+	private static String retornaImagemResolucao350(String imagem) {
+		String[] resultado = imagem.split("_.jpg");
+		String prefixo = resultado[0];
+		String extensao = "_.jpg";
+		prefixo = prefixo.substring(0, prefixo.length()-3);
+		prefixo = prefixo + "350";
+		imagem = prefixo + extensao;
+		return imagem;
 	}
 
 	private static boolean ehIsbnUnico(String isbn, ArrayList<String> isbnUsados) {
