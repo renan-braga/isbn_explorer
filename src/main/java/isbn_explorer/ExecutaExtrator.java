@@ -6,7 +6,5 @@ public class ExecutaExtrator {
 
 	public static void rodar(String planilhaEntrada, String novPlanilha, JLabel status) throws Exception {
 		
-		
-		
 	}
 }
