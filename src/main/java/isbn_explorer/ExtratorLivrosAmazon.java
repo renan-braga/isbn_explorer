@@ -51,11 +51,11 @@ public class ExtratorLivrosAmazon extends ExtratorAbstrato{
 //						isbnUsados.add(isbn);
 						extrator.getDriver().get(AMAZON_SEARCH + isbn);
 						extrator.waitForLoad();
-						WebElement listaResultados = extrator.getDriver().findElements(By.xpath("//*[@class='s-result-list s-search-results sg-row']")).get(0);
-		
-						if(listaResultados.findElements(By.xpath("//*[@data-image-index='0']")).size() == 1) {
-							imagem = listaResultados.findElement(By.xpath("//*[@data-image-index='0']")).getAttribute("src");
-							if( imagem!= "") {
+//						WebElement listaResultados = extrator.getDriver().findElements(By.xpath("//*[@class='s-result-list s-search-results sg-row']")).get(0);
+						WebElement imagemElement = extrator.getDriver().findElement(By.xpath("//*[@class='s-image']"));
+						if(imagemElement != null) {
+							imagem = imagemElement.getAttribute("src");
+							if( imagem!= "" && imagem != null) {
 								acertos++; 
 								lblStatus.setText("<html>Processando extração...<br> Encontradas: "+acertos+" capas <br> Titulo: " +titulo+"<br>ISBN: "+isbn+" </html>");
 								imagem = retornaImagemResolucao350(imagem);
