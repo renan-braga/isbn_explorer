@@ -8,6 +8,7 @@ public class ListaImagensVazias {
 
 	public static boolean estaNalista(String imagem) {
 		for(String link : links) {
+			if(imagem == null) continue;
 			if(imagem.contains(link))
 				return true;
 		}
@@ -28,7 +29,7 @@ public class ListaImagensVazias {
 		links.add("https://m.media-amazon.com/images/I/41pzdcT-2UL._AC_UL350_.jpg");
 		links.add("https://m.media-amazon.com/images/I/3149ZZJX13L._AC_UL320_.350_.jpg");
 		links.add("https://m.media-amazon.com/images/I/31q93o46RjL._AC_UL350_.jpg");
-		return null;
+		return links;
 	}
 
 }
